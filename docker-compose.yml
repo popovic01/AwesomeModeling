@@ -7,6 +7,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: root
     ports:
       - 27017:27017
+
   elastic:
     image: elasticsearch:8.13.3
     ports:
@@ -19,12 +20,31 @@ services:
       - ELASTIC_PASSWORD_FILE=/run/secrets/bootstrapPassword.txt
       - xpack.security.enabled=false
       - discovery.type=single-node
+
   kibana:
     image: kibana:8.13.3
     ports:
       - 5601:5601
+
   rabbit:
     image: rabbitmq
+    healthcheck:
+      test: "rabbitmq-diagnostics -q check_running"
+      interval: 10s
+      timeout: 30s
+      retries: 100
+
+  spring:
+    build: awesomemodeling/
+    ports:
+      - 8080:8080
+
+  python:
+    build: downindex
+    depends_on:
+      rabbit:
+        condition: service_healthy
+
 volumes:
   esdata:
     driver: local
