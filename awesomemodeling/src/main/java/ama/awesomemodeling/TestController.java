@@ -1,5 +1,6 @@
 package ama.awesomemodeling;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -10,6 +11,9 @@ import com.rabbitmq.client.Channel;
 @RestController
 public class TestController {
     private final static String QUEUE_NAME = "hello";
+
+    @Autowired
+    private TestRepository repo;
 
     @GetMapping("/")
     String test() {
@@ -24,6 +28,10 @@ public class TestController {
         } catch (Exception e) {
             System.out.println(e);
         }
+
+        Person p = new Person("Alberto", "Basaglia");
+        repo.save(p);
+
         return "Hello World!";
     }
 }

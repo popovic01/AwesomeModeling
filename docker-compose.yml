@@ -15,9 +15,8 @@ services:
       - 9300:9300
     volumes:
       - esdata:/user/share/elasticsearch/data
-      - ./bootstrapPassword.txt:/run/secrets/bootstrapPassword.txt
     environment:
-      - ELASTIC_PASSWORD_FILE=/run/secrets/bootstrapPassword.txt
+      - ELASTIC_PASSWORD=awesomemodelingforeveryone
       - xpack.security.enabled=false
       - discovery.type=single-node
 
