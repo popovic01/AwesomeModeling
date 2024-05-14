@@ -7,6 +7,12 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD
     ports:
       - 27017:27017
+    healthcheck:
+      test: ["CMD","mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
 
   elastic:
     image: elasticsearch:8.13.3
@@ -42,6 +48,8 @@ services:
     build: downindex
     depends_on:
       rabbit:
+        condition: service_healthy
+      mongo:
         condition: service_healthy
     environment:
       - GUARDIAN_API
