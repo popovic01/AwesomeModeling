@@ -53,6 +53,8 @@ services:
         condition: service_healthy
     environment:
       - GUARDIAN_API
+      - MONGO_INITDB_ROOT_USERNAME
+      - MONGO_INITDB_ROOT_PASSWORD
   
   mongoexpress:
     image: mongo-express

@@ -9,7 +9,9 @@ print("Guardian api is {}".format(guardian_api))
 
 base_url = "https://content.guardianapis.com/"
 
-client = pymongo.MongoClient("mongodb://root:root@mongo:27017/")
+mongo_user = os.environ["MONGO_INITDB_ROOT_USERNAME"]
+mongo_passwd = os.environ["MONGO_INITDB_ROOT_PASSWORD"]
+client = pymongo.MongoClient("mongodb://{}:{}@mongo:27017/".format(mongo_user, mongo_passwd))
 db = client["test"]
 
 def guardian_search_page(query: str, page: int = 1, fromdate: str|None = None, todate: str|None = None):
@@ -50,7 +52,11 @@ def store_article(query: str, article):
     guardian_id = article["id"] 
     print(title)
 
-    article = { "title": title, "content" : content, "guardian_id" : guardian_id }
+    article = {
+        "title": title,
+        "content" : content,
+        "guardian_id" : guardian_id
+    }
     collection = db["article"]
 
     collection.insert_one(article)
