@@ -2,11 +2,15 @@ import pika
 import time
 import os
 import requests
+import pymongo
 
 guardian_api = os.environ["GUARDIAN_API"]
 print("Guardian api is {}".format(guardian_api))
 
 base_url = "https://content.guardianapis.com/"
+
+client = pymongo.MongoClient("mongodb://root:root@mongo:27017/")
+db = client["test"]
 
 def guardian_search_page(query: str, page: int = 1, fromdate: str|None = None, todate: str|None = None):
     url = base_url + "/search"
@@ -46,10 +50,14 @@ def store_article(query: str, article):
     guardian_id = article["id"] 
     print(title)
 
+    article = { "title": title, "content" : content, "guardian_id" : guardian_id }
+    collection = db["article"]
+
+    collection.insert_one(article)
+
 
 def main():
-
-    # print(guardian_search("science"))
+    print(guardian_search("science"))
 
     connection = pika.BlockingConnection(pika.ConnectionParameters(host='rabbit'))
     channel = connection.channel()
