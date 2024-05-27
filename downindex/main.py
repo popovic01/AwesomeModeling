@@ -1,8 +1,10 @@
+import datetime
 import pika
 import time
 import os
 import requests
 import pymongo
+from bson import ObjectId
 
 guardian_api = os.environ["GUARDIAN_API"]
 print("Guardian api is {}".format(guardian_api))
@@ -33,51 +35,66 @@ def guardian_search_page(query: str, page: int = 1, fromdate: str|None = None, t
     return res.json()
 
 
-def guardian_search(query: str, fromdate: str|None = None, todate: str|None = None):
+def guardian_search(query: str, id:str, fromdate: str|None = None, todate: str|None = None):
     first = guardian_search_page(query, 1, fromdate, todate)
-    store_page(query, first)
+    store_page(query, id, first)
     pages = first["response"]["pages"]
     for page in range(2, pages+1, 1):
         res = guardian_search_page(query, page, fromdate, todate)
-        store_page(query, res)
+        store_page(query, id, res)
         
 
-def store_page(query: str , page):
+def store_page(query: str , id: str, page):
     for result in page["response"]["results"]:
-        store_article(query, result)
+        store_article(query, id, result)
 
-def store_article(query: str, article):
+def store_article(query: str, id: str, article):
     title = article["webTitle"]
     content = article["blocks"]["body"][0]["bodyTextSummary"]
     guardian_id = article["id"] 
+    web_date = article["webPublicationDate"]
     print(title)
 
     article = {
         "title": title,
         "content" : content,
-        "guardian_id" : guardian_id
+        "guardian_id" : guardian_id,
+        "web_date": web_date
     }
-    collection = db["article"]
 
+    collection = db["articles_{}".format(id)]
     collection.insert_one(article)
+
+def callback_q1_message(ch, method, properties, body):
+    print(f" [x] Received {body}")
+    id = body.decode('utf-8')
+    collection = db["control"]
+
+    control_document = collection.find_one({"_id": ObjectId(id)})
+
+    print("Retrieved control document: {}".format(control_document))
+
+    query = control_document["topic"]
+
+    collection.update_one({"_id": ObjectId(id)}, {"$set": {"status": "PROCESSING"}})
+
+    guardian_search(query, id)
+
+    collection.update_one({"_id": ObjectId(id)}, {"$set": {"status": "FINISHED", "finished_time": datetime.datetime.now(tz=datetime.timezone.utc)}})
 
 
 def main():
-    print(guardian_search("science"))
+    # print(guardian_search("science"))
 
     connection = pika.BlockingConnection(pika.ConnectionParameters(host='rabbit'))
     channel = connection.channel()
 
-    channel.queue_declare(queue='hello')
+    channel.queue_declare(queue='q1')
 
-    def callback(ch, method, properties, body):
-        print(f" [x] Received {body}")
-
-    channel.basic_consume(queue='hello',
+    channel.basic_consume(queue='q1',
                         auto_ack=True,
-                        on_message_callback=callback)
+                        on_message_callback=callback_q1_message)
 
-    print(' [*] Waiting for messages. To exit press CTRL+C')
     channel.start_consuming()
 
 if __name__ == "__main__":
