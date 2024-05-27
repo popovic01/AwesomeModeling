@@ -2,6 +2,8 @@ services:
   mongo:
     image: mongo
     restart: always
+    volumes:
+     - mdbdata:/data/db
     environment:
       - MONGO_INITDB_ROOT_USERNAME
       - MONGO_INITDB_ROOT_PASSWORD
@@ -73,4 +75,6 @@ services:
 
 volumes:
   esdata:
+    driver: local
+  mdbdata:
     driver: local
