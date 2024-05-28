@@ -6,6 +6,8 @@ import java.time.LocalDateTime;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import ama.awesomemodeling.enums.QOneStatus;
+
 @Document("control")
 public class QOne {
     @Id

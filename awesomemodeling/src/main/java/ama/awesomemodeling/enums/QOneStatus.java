@@ -1,4 +1,4 @@
-package ama.awesomemodeling.entities;
+package ama.awesomemodeling.enums;
 
 public enum QOneStatus {
     SUBMITTED,

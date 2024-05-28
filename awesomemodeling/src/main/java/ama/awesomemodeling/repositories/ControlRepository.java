@@ -1,4 +1,4 @@
-package ama.awesomemodeling;
+package ama.awesomemodeling.repositories;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 

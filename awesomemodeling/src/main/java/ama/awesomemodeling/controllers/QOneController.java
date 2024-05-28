@@ -1,4 +1,4 @@
-package ama.awesomemodeling;
+package ama.awesomemodeling.controllers;
 
 import java.time.LocalDateTime;
 
@@ -11,8 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.rabbitmq.client.ConnectionFactory;
 
 import ama.awesomemodeling.entities.QOne;
-import ama.awesomemodeling.entities.QOneCreateDTO;
-import ama.awesomemodeling.entities.QOneStatus;
+import ama.awesomemodeling.dtos.QOneCreateDTO;
+import ama.awesomemodeling.enums.QOneStatus;
+import ama.awesomemodeling.repositories.ControlRepository;
 
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.Channel;
@@ -25,7 +26,7 @@ public class QOneController {
     @Autowired
     private ControlRepository repo;
 
-    @PostMapping("/")
+    @PostMapping("")
     String post(@RequestBody QOneCreateDTO dto) {
 
         QOne qone = new QOne();

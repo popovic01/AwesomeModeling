@@ -1,4 +1,4 @@
-package ama.awesomemodeling.entities;
+package ama.awesomemodeling.dtos;
 import java.time.LocalDate;
 
 public class QOneCreateDTO {
