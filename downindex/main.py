@@ -4,6 +4,7 @@ import time
 import os
 import requests
 import pymongo
+import json
 from bson import ObjectId
 
 guardian_api = os.environ["GUARDIAN_API"]
@@ -55,7 +56,7 @@ def store_article(query: str, id: str, article):
     web_date = article["webPublicationDate"]
     print(title)
 
-    article = {
+    doc = {
         "title": title,
         "content" : content,
         "guardian_id" : guardian_id,
@@ -63,7 +64,17 @@ def store_article(query: str, id: str, article):
     }
 
     collection = db["articles_{}".format(id)]
-    collection.insert_one(article)
+    collection.insert_one(doc)
+    print("Succesfully stored document")
+
+    try:
+        del doc["_id"]
+        res = requests.post("http://elastic:9200/articles_{}/_doc".format(id), json.dumps(doc), headers={"Content-Type": "application/json"})
+        res.raise_for_status()
+        print("Succesfully indexed document")
+    except Exception as err:
+        print(err)
+
 
 def callback_q1_message(ch, method, properties, body):
     print(f" [x] Received {body}")
