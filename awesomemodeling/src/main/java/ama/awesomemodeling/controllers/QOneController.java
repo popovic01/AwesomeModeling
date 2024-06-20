@@ -84,12 +84,13 @@ public class QOneController {
         return "Starting document retrieval";
     }
 
-    public List<Hit<Article>> search(ElasticsearchClient esClient, String index, String query) throws IOException {
+    public List<Hit<Article>> search(ElasticsearchClient esClient, String index, String field, String query) throws IOException {
 
         SearchResponse<Article> response = esClient.search(s -> s
             .index(index)
             .query(q -> q
-                .queryString(t -> t
+                .match(t -> t
+                    .field(field)
                     .query(query)
                 )
             ),
@@ -120,7 +121,7 @@ public class QOneController {
         // Perform the search
         ArrayList<String> articleContents = new ArrayList<>();
         try {
-            List<Hit<Article>> hits = search(esClient, "articles_" + id, query);
+            List<Hit<Article>> hits = search(esClient, "articles_" + id, "content", query);
             if (hits.isEmpty()) {
                 System.out.println("No articles found");
             } else {
@@ -187,7 +188,7 @@ public class QOneController {
             System.out.println(out);
         }
 
-        return id + " " + query + " " + k;
+        return "Topic modeling done! See output";
     }
     
 }
