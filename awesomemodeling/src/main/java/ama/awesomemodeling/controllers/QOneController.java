@@ -34,6 +34,18 @@ import ama.awesomemodeling.repositories.ControlRepository;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.Channel;
 
+import cc.mallet.pipe.*;
+import cc.mallet.pipe.iterator.StringArrayIterator;
+import cc.mallet.topics.ParallelTopicModel;
+import cc.mallet.types.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Formatter;
+import java.util.Locale;
+import java.util.Iterator;
+import java.util.TreeSet;
+
 @RequestMapping("/q1")
 @RestController
 public class QOneController {
@@ -106,6 +118,7 @@ public class QOneController {
         ElasticsearchClient esClient = new ElasticsearchClient(transport);
 
         // Perform the search
+        ArrayList<String> articleContents = new ArrayList<>();
         try {
             List<Hit<Article>> hits = search(esClient, "articles_" + id, query);
             if (hits.isEmpty()) {
@@ -114,6 +127,7 @@ public class QOneController {
                 for (Hit<Article> hit : hits) {
                     Article article = hit.source();
                     System.out.println("Found article: " + article.getTitle());
+                    articleContents.add(article.getContent());
                 }
             }
         } catch (IOException e) {
@@ -124,6 +138,53 @@ public class QOneController {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+
+        // Create a list of pipes to process the documents
+        ArrayList<Pipe> pipeList = new ArrayList<>();
+
+        pipeList.add(new CharSequence2TokenSequence());
+        pipeList.add(new TokenSequenceLowercase());
+        pipeList.add(new TokenSequenceRemoveStopwords());
+        pipeList.add(new TokenSequence2FeatureSequence());
+
+        InstanceList instances = new InstanceList(new SerialPipes(pipeList));
+        String[] articleContentsArray = articleContents.toArray(new String[0]);
+        instances.addThruPipe(new StringArrayIterator(articleContentsArray));
+
+        int numTopics = 3;
+        ParallelTopicModel model = new ParallelTopicModel(numTopics);
+        model.addInstances(instances);
+
+        model.setNumThreads(8);
+        model.setNumIterations(1000);
+
+        System.out.println("Running the model");
+
+        // Run the model
+        try {
+            model.estimate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("Execution finished");
+
+        Alphabet dataAlphabet = instances.getDataAlphabet();
+        ArrayList<TreeSet<IDSorter>> topicSortedWords = model.getSortedWords();
+
+        for (int topic = 0; topic < numTopics; topic++) {
+            Formatter out = new Formatter(new StringBuilder(), Locale.US);
+            out.format("Topic %d:\n", topic);
+            Iterator<IDSorter> iterator = topicSortedWords.get(topic).iterator();
+
+            int rank = 0;
+            while (iterator.hasNext() && rank < 10) {
+                IDSorter idCountPair = iterator.next();
+                out.format("%s (%.0f) ", dataAlphabet.lookupObject(idCountPair.getID()), idCountPair.getWeight());
+                rank++;
+            }
+            System.out.println(out);
         }
 
         return id + " " + query + " " + k;
