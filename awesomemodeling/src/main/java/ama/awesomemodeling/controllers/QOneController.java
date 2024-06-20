@@ -34,6 +34,8 @@ public class QOneController {
         qone.setTopic(dto.getTopic());
         qone.setStatus(QOneStatus.SUBMITTED);
         qone.setSubmitted_time(LocalDateTime.now());
+        qone.setLocal_start_date(dto.getLocal_start_date());
+        qone.setLocal_end_date(dto.getLocal_end_date());
 
         QOne saved = repo.save(qone);
 

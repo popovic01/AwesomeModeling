@@ -5,6 +5,7 @@ import os
 import requests
 import pymongo
 import json
+import datetime
 from bson import ObjectId
 
 guardian_api = os.environ["GUARDIAN_API"]
@@ -89,7 +90,9 @@ def callback_q1_message(ch, method, properties, body):
 
     collection.update_one({"_id": ObjectId(id)}, {"$set": {"status": "PROCESSING"}})
 
-    guardian_search(query, id)
+    local_start_date = control_document["local_start_date"].strftime("%Y-%m-%d")
+    local_end_date = control_document["local_end_date"].strftime("%Y-%m-%d")
+    guardian_search(query, id, local_start_date, local_end_date)
 
     collection.update_one({"_id": ObjectId(id)}, {"$set": {"status": "FINISHED", "finished_time": datetime.datetime.now(tz=datetime.timezone.utc)}})
 
