@@ -14,6 +14,7 @@ import org.elasticsearch.client.RestClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,9 +29,9 @@ import com.rabbitmq.client.ConnectionFactory;
 
 import ama.awesomemodeling.dtos.QOneCreateDTO;
 import ama.awesomemodeling.entities.Article;
-import ama.awesomemodeling.entities.Topic;
 import ama.awesomemodeling.entities.QOne;
 import ama.awesomemodeling.entities.QTwoTopics;
+import ama.awesomemodeling.entities.Topic;
 import ama.awesomemodeling.enums.QOneStatus;
 import ama.awesomemodeling.repositories.ControlRepository;
 import cc.mallet.pipe.CharSequence2TokenSequence;
@@ -53,6 +54,7 @@ import co.elastic.clients.transport.rest_client.RestClientTransport;
 
 @RequestMapping(path="/q1", produces="application/json")
 @RestController
+@CrossOrigin(origins = "*")
 public class QOneController {
     private final static String QUEUE_NAME = "q1";
 

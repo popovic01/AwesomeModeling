@@ -1,0 +1,11 @@
+<div class="col">
+    <div class="row">
+        @if (qones != undefined) {
+            <ul class="list-group">
+                @for (qone of qones; track $index) {
+                    <li class="list-group-item">{{qone.topic}}</li>
+                }
+            </ul>
+        }
+    </div>
+</div>
