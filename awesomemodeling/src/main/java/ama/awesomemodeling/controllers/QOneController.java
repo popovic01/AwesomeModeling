@@ -46,6 +46,9 @@ import java.util.Locale;
 import java.util.Iterator;
 import java.util.TreeSet;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 @RequestMapping("/q1")
 @RestController
 public class QOneController {
@@ -153,12 +156,12 @@ public class QOneController {
         String[] articleContentsArray = articleContents.toArray(new String[0]);
         instances.addThruPipe(new StringArrayIterator(articleContentsArray));
 
-        int numTopics = 3;
+        int numTopics = k;
         ParallelTopicModel model = new ParallelTopicModel(numTopics);
         model.addInstances(instances);
 
         model.setNumThreads(8);
-        model.setNumIterations(1000);
+        model.setNumIterations(100);
 
         System.out.println("Running the model");
 
@@ -173,22 +176,33 @@ public class QOneController {
 
         Alphabet dataAlphabet = instances.getDataAlphabet();
         ArrayList<TreeSet<IDSorter>> topicSortedWords = model.getSortedWords();
+        ArrayList<ArrayList<String>> topics = new ArrayList<>();
+        ObjectMapper om = new ObjectMapper();
 
         for (int topic = 0; topic < numTopics; topic++) {
             Formatter out = new Formatter(new StringBuilder(), Locale.US);
             out.format("Topic %d:\n", topic);
             Iterator<IDSorter> iterator = topicSortedWords.get(topic).iterator();
 
+            ArrayList<String> currentTopic = new ArrayList<>();
             int rank = 0;
             while (iterator.hasNext() && rank < 10) {
                 IDSorter idCountPair = iterator.next();
                 out.format("%s (%.0f) ", dataAlphabet.lookupObject(idCountPair.getID()), idCountPair.getWeight());
+                currentTopic.add((String)dataAlphabet.lookupObject(idCountPair.getID()));
                 rank++;
             }
+            topics.add(currentTopic);
             System.out.println(out);
         }
 
-        return "Topic modeling done! See output";
+        try {
+            return om.writeValueAsString(topics);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        return "Something went wrong";
     }
     
 }
