@@ -90,8 +90,16 @@ def callback_q1_message(ch, method, properties, body):
 
     collection.update_one({"_id": ObjectId(id)}, {"$set": {"status": "PROCESSING"}})
 
-    local_start_date = control_document["local_start_date"].strftime("%Y-%m-%d")
-    local_end_date = control_document["local_end_date"].strftime("%Y-%m-%d")
+    if "local_start_date" in control_document:
+        local_start_date = control_document["local_start_date"].strftime("%Y-%m-%d")
+    else:
+        local_start_date = None
+
+    if "local_end_date" in control_document:
+        local_end_date = control_document["local_end_date"].strftime("%Y-%m-%d")
+    else:
+        local_end_date = None
+
     guardian_search(query, id, local_start_date, local_end_date)
 
     collection.update_one({"_id": ObjectId(id)}, {"$set": {"status": "FINISHED", "finished_time": datetime.datetime.now(tz=datetime.timezone.utc)}})

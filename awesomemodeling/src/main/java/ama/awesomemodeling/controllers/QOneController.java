@@ -84,7 +84,7 @@ public class QOneController {
             System.out.println(e);
         }
 
-        return "Starting document retrieval";
+        return saved.getId();
     }
 
     public List<Hit<Article>> search(ElasticsearchClient esClient, String index, String field, String query) throws IOException {
