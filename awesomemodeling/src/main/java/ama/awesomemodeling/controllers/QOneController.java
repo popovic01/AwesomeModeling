@@ -28,6 +28,7 @@ import com.rabbitmq.client.ConnectionFactory;
 
 import ama.awesomemodeling.dtos.QOneCreateDTO;
 import ama.awesomemodeling.entities.Article;
+import ama.awesomemodeling.entities.Topic;
 import ama.awesomemodeling.entities.QOne;
 import ama.awesomemodeling.entities.QTwoTopics;
 import ama.awesomemodeling.enums.QOneStatus;
@@ -50,7 +51,7 @@ import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
 
-@RequestMapping("/q1")
+@RequestMapping(path="/q1", produces="application/json")
 @RestController
 public class QOneController {
     private final static String QUEUE_NAME = "q1";
@@ -124,6 +125,11 @@ public class QOneController {
     @GetMapping("/{collectionId}/q2")
     ResponseEntity<QTwoTopics> get(@PathVariable(value = "collectionId") String id, @RequestParam String query,
             @RequestParam int k) {
+        QOne qone = repo.findById(id).orElse(null);
+
+        if (qone == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
         // URL and API key
         String serverUrl = "http://elastic:9200";
 
@@ -195,7 +201,7 @@ public class QOneController {
 
         Alphabet dataAlphabet = instances.getDataAlphabet();
         ArrayList<TreeSet<IDSorter>> topicSortedWords = model.getSortedWords();
-        ArrayList<ArrayList<String>> topics = new ArrayList<>();
+        ArrayList<Topic> topics = new ArrayList<>();
 
         for (int topic = 0; topic < numTopics; topic++) {
             Formatter out = new Formatter(new StringBuilder(), Locale.US);
@@ -210,7 +216,7 @@ public class QOneController {
                 currentTopic.add((String) dataAlphabet.lookupObject(idCountPair.getID()));
                 rank++;
             }
-            topics.add(currentTopic);
+            topics.add(new Topic(currentTopic));
             System.out.println(out);
         }
 
