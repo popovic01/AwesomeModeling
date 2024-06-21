@@ -27,6 +27,7 @@ import com.rabbitmq.client.ConnectionFactory;
 
 import ama.awesomemodeling.entities.Article;
 import ama.awesomemodeling.entities.QOne;
+import ama.awesomemodeling.entities.QTwoTopics;
 import ama.awesomemodeling.dtos.QOneCreateDTO;
 import ama.awesomemodeling.enums.QOneStatus;
 import ama.awesomemodeling.repositories.ControlRepository;
@@ -197,7 +198,8 @@ public class QOneController {
         }
 
         try {
-            return om.writeValueAsString(topics);
+            QTwoTopics res = new QTwoTopics(topics);
+            return om.writeValueAsString(res);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
