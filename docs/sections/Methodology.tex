@@ -46,3 +46,67 @@ reliable transfer of messages between applications and services. It supports var
 as point-to-point, publish/subscribe, and request/response. It is widely used in microservices architectures,
 IoT applications, and asynchronous communication scenarios where decoupling and reliability are crucial.
 \cite{rabbitmq}
+
+\section{Project Description}
+The project details are outlined below, supported by diagrams for better understanding.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.7\linewidth] {././figures/diagram}
+    \caption{Process flow}
+\end{figure}
+
+Firstly, the Spring service includes a monitoring functionality, initialized by a query referred to
+as Q1. An example JSON representation of Q1 is shown in Listing \ref{lst:q1}.
+
+\begin{lstlisting}[language=json, caption={JSON representation of Q1}, label={lst:q1}]
+{
+  "topic": "science",
+  "local_start_date": "2024-05-01",
+  "local_end_date": "2024-07-01"
+}
+\end{lstlisting}
+
+This query is stored in a MongoDB collection named \textit{Control}, which manages all Q1 queries.
+Listing\ref{lst:q1Class} shows class structure of Q1.
+
+\begin{lstlisting}[language=Java, caption={Class definition of QOne}, label={lst:q1Class}]
+String topic;
+
+QOneStatus status;
+
+LocalDateTime submitted_time;
+LocalDateTime finished_time;
+
+LocalDate local_start_date;
+LocalDate local_end_date;
+\end{lstlisting}
+
+\textit{topic} field represents name of Q1, \textit{status} indicates the current processing status,
+which can have the following values: SUBMITTED, PROCESSING and FINISHED. Beside that,
+\textit{local\_start\_date} and \textit{local\_end\_date} are used to filter articles from Guardian
+API while \textit{submitted\_date} and \textit{finished\_date} represent date of Q1 submission and
+date when the documents fetching for Q1 is finished, respectively. Once saved in the database, the
+entity's ID is published to RabbitMQ.
+\newline
+Concurrently, a Python service subscribes to this queue. Upon receiving the Q1 ID, it triggers
+fetching from the Guardian API, setting the Q1 document status to PROCESSING. Articles retrieved from
+the Guardian API are saved in MongoDB in the format shown in Listing \ref{lst:article}.
+
+\begin{lstlisting}[language=json, caption={JSON representation of a Guardian Article}, label={lst:article}]
+{
+    "title": title,
+    "content" : content,
+    "guardian_id" : guardian_id,
+    "web_date": web_date
+}
+\end{lstlisting}
+
+The \textit{title} and \textit{content} fields represent title and contect of an article respectively
+whereas \textit{guardian\_id} and \textit{web\_date} represent guardian id and date of publishing
+an article. Each article is subsequently indexed and stored as a JSON object in the Elasticsearch server.
+
+For the second query, Q2, a user requests \textit{k} topics. This requires the Q1 ID as a parameter.
+For instance, if Q1 was about \textit{Science}, and related articles are stored in the database,
+a subsequent Q2 query like \textit{Nuclear war} expects to retrieve \textit{k} topics based on that
+subset of documents.
