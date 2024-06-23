@@ -13,7 +13,11 @@ export class QOne {
 }
 
 export class QTwoTopics {
-  public topics!: string[][];
+  public topics!: QTwoTopic[];
+}
+
+export class QTwoTopic {
+  public topic!: string[];
 }
 
 export class QOneCreate {

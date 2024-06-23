@@ -26,7 +26,6 @@ export class QueriesComponent {
       .subscribe(
         (res) => {
           this.qones = res;
-          console.log(this.qones);
         },
       );
 

@@ -20,7 +20,6 @@
                     <div class="row">
                         <label for="query" class="col-6">Query</label>
                         <input type="text" class="col-6 form-control" id="query" formControlName="query">
-
                     </div>
                 </div>
                 <div class="col-5">
@@ -30,11 +29,22 @@
                 <div class="col-2">
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </div>
-
-
             </div>
         </form>
 
+        @if (loading) {
+        <div class="spinner-border m-5" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        }
 
+        @if (res) {
+        <h4>Topics</h4>
+        <ul class="list-group">
+            @for (topic of res.topics; track $index) {
+            <li class="list-group-item">{{topic.topic.join(', ')}}</li>
+            }
+        </ul>
+        }
     </div>
 </div>
