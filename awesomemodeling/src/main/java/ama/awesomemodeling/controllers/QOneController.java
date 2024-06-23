@@ -47,6 +47,9 @@ public class QOneController {
     @Autowired
     private ControlRepository repo;
 
+    @Autowired
+    private MalletService malletService;
+
     @PostMapping("")
     ResponseEntity<QOne> post(@RequestBody QOneCreateDTO dto) {
 
@@ -156,7 +159,6 @@ public class QOneController {
             }
         }
 
-        MalletService malletService = new MalletService();
         ArrayList<Topic> topics = malletService.getTopics(articleContents, k);
         if (topics == null) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
