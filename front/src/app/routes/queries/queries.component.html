@@ -1,11 +1,43 @@
 <div class="col">
     <div class="row">
+        <h3>Available topics</h3>
         @if (qones != undefined) {
-            <ul class="list-group">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Query</th>
+                    <th scope="col">Status</th>
+                </tr>
+            </thead>
+            <tbody>
                 @for (qone of qones; track $index) {
-                    <li class="list-group-item">{{qone.topic}}</li>
+                <tr [routerLink]="qone.id">
+                    <td>{{qone.topic}}</td>
+                    <td>{{qone.status}}</td>
+                </tr>
                 }
-            </ul>
+            </tbody>
+        </table>
         }
+    </div>
+    <div class="row">
+        <h3>Create new topic</h3>
+        <form [formGroup]="createForm" (ngSubmit)="onSubmit()">
+            <div class="form-group row">
+                <label for="topic">Topic</label>
+                <input type="text" class="form-control" id="topic" formControlName="topic">
+            </div>
+            <div class="form-group row">
+                <label for="start_date">Start Date</label>
+                <input type="date" class="form-control" id="start_date" formControlName="start_date">
+            </div>
+            <div class="form-group row">
+                <label for="end_date">End Date</label>
+                <input type="date" class="form-control" id="end_date" formControlName="end_date">
+            </div>
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </form>
     </div>
 </div>

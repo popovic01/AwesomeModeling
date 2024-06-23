@@ -3,13 +3,19 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 export class QOne {
-  private id!: string;
+  public id!: string;
   public topic!: string;
-  private status!: string;
+  public status!: string;
   private submitted_time!: Date;
   private finished_time!: Date;
   private local_start_date!: Date;
   private local_end_date!: Date;
+}
+
+export class QOneCreate {
+  public topic!: string ;
+  public local_start_date!: Date | undefined ;
+  public local_end_date!: Date | undefined ;
 }
 
 @Injectable({
@@ -27,5 +33,10 @@ export class BackendService {
 
   public getQOne(id: string): Observable<QOne> {
     return this.httpClient.get<QOne>(this.PATH + `/q1/${id}`);
+  }
+
+  public createQOne(data: QOneCreate) {
+    return this.httpClient.post<QOne>(this.PATH + `/q1`, data);
+
   }
 }

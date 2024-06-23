@@ -6,5 +6,5 @@ import { provideHttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 
 export const appConfig: ApplicationConfig = {
-  providers: [provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes),  provideHttpClient(), importProvidersFrom(CommonModule)],
+  providers: [provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes),  provideHttpClient(), ],
 };
