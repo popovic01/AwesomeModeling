@@ -12,6 +12,7 @@
         <p><b>Submitted At</b>: {{qone?.submitted_time | date: 'yyyy/MM/dd HH:mm'}}</p>
         <p><b>Finished At</b>: {{qone?.finished_time | date: 'yyyy/MM/dd HH:mm'}}</p>
     </div>
+    @if (qone && qone.status == "FINISHED"){
     <div class="row">
         <h3>Topic Modeling</h3>
         <form [formGroup]="form" (ngSubmit)="onSubmit()">
@@ -47,4 +48,5 @@
         </ul>
         }
     </div>
+    }
 </div>
