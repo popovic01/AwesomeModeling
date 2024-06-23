@@ -1,11 +1,11 @@
 <div class="col">
     <div class="row">
-        <h3>Available topics</h3>
+        <h3>Monitored subjects</h3>
         @if (qones != undefined) {
         <table class="table">
             <thead>
                 <tr>
-                    <th scope="col">Query</th>
+                    <th scope="col">Subject</th>
                     <th scope="col">Status</th>
                     <th scope="col">From</th>
                     <th scope="col">To</th>
@@ -29,7 +29,7 @@
         }
     </div>
     <div class="row">
-        <h3>Create new topic</h3>
+        <h3>Create new subject</h3>
         <form [formGroup]="createForm" (ngSubmit)="onSubmit()">
             <div class="form-group row">
                 <label for="topic">Topic</label>
