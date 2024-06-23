@@ -3,11 +3,7 @@ package ama.awesomemodeling.controllers;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Formatter;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
-import java.util.TreeSet;
 
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
@@ -33,18 +29,8 @@ import ama.awesomemodeling.entities.QOne;
 import ama.awesomemodeling.entities.QTwoTopics;
 import ama.awesomemodeling.entities.Topic;
 import ama.awesomemodeling.enums.QOneStatus;
+import ama.awesomemodeling.services.MalletService;
 import ama.awesomemodeling.repositories.ControlRepository;
-import cc.mallet.pipe.CharSequence2TokenSequence;
-import cc.mallet.pipe.Pipe;
-import cc.mallet.pipe.SerialPipes;
-import cc.mallet.pipe.TokenSequence2FeatureSequence;
-import cc.mallet.pipe.TokenSequenceLowercase;
-import cc.mallet.pipe.TokenSequenceRemoveStopwords;
-import cc.mallet.pipe.iterator.StringArrayIterator;
-import cc.mallet.topics.ParallelTopicModel;
-import cc.mallet.types.Alphabet;
-import cc.mallet.types.IDSorter;
-import cc.mallet.types.InstanceList;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
@@ -170,56 +156,10 @@ public class QOneController {
             }
         }
 
-        // Create a list of pipes to process the documents
-        ArrayList<Pipe> pipeList = new ArrayList<>();
-
-        pipeList.add(new CharSequence2TokenSequence());
-        pipeList.add(new TokenSequenceLowercase());
-        pipeList.add(new TokenSequenceRemoveStopwords());
-        pipeList.add(new TokenSequence2FeatureSequence());
-
-        InstanceList instances = new InstanceList(new SerialPipes(pipeList));
-        String[] articleContentsArray = articleContents.toArray(new String[0]);
-        instances.addThruPipe(new StringArrayIterator(articleContentsArray));
-
-        int numTopics = k;
-        ParallelTopicModel model = new ParallelTopicModel(numTopics);
-        model.addInstances(instances);
-
-        model.setNumThreads(8);
-        model.setNumIterations(100);
-
-        System.out.println("Running the model");
-
-        // Run the model
-        try {
-            model.estimate();
-        } catch (Exception e) {
-            e.printStackTrace();
+        MalletService malletService = new MalletService();
+        ArrayList<Topic> topics = malletService.getTopics(articleContents, k);
+        if (topics == null) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        System.out.println("Execution finished");
-
-        Alphabet dataAlphabet = instances.getDataAlphabet();
-        ArrayList<TreeSet<IDSorter>> topicSortedWords = model.getSortedWords();
-        ArrayList<Topic> topics = new ArrayList<>();
-
-        for (int topic = 0; topic < numTopics; topic++) {
-            Formatter out = new Formatter(new StringBuilder(), Locale.US);
-            out.format("Topic %d:\n", topic);
-            Iterator<IDSorter> iterator = topicSortedWords.get(topic).iterator();
-
-            ArrayList<String> currentTopic = new ArrayList<>();
-            int rank = 0;
-            while (iterator.hasNext() && rank < 10) {
-                IDSorter idCountPair = iterator.next();
-                out.format("%s (%.0f) ", dataAlphabet.lookupObject(idCountPair.getID()), idCountPair.getWeight());
-                currentTopic.add((String) dataAlphabet.lookupObject(idCountPair.getID()));
-                rank++;
-            }
-            topics.add(new Topic(currentTopic));
-            System.out.println(out);
         }
 
         return new ResponseEntity<>(new QTwoTopics(topics), HttpStatus.OK);
