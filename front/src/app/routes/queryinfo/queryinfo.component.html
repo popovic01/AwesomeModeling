@@ -1,2 +1,40 @@
-<p><b>Topic</b>: {{qone?.topic}}</p>
-<p><b>Status</b>: {{qone?.status}}</p>
+<div class="col">
+    <div class="row">
+        <h3>Info</h3>
+        <p><b>Topic</b>: {{qone?.topic}}</p>
+        <p><b>Status</b>: {{qone?.status}}</p>
+        @if (qone?.local_start_date) {
+        <p><b>From</b>: {{qone?.local_start_date | date: 'yyyy/MM/dd'}}</p>
+        }
+        @if (qone?.local_end_date) {
+        <p><b>To</b>: {{qone?.local_end_date | date: 'yyyy/MM/dd'}}</p>
+        }
+        <p><b>Submitted At</b>: {{qone?.submitted_time | date: 'yyyy/MM/dd HH:mm'}}</p>
+        <p><b>Finished At</b>: {{qone?.finished_time | date: 'yyyy/MM/dd HH:mm'}}</p>
+    </div>
+    <div class="row">
+        <h3>Topic Modeling</h3>
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+            <div class="row">
+                <div class="col-5">
+                    <div class="row">
+                        <label for="query" class="col-6">Query</label>
+                        <input type="text" class="col-6 form-control" id="query" formControlName="query">
+
+                    </div>
+                </div>
+                <div class="col-5">
+                    <label for="k">K</label>
+                    <input type="number" class="form-control" id="k" formControlName="k">
+                </div>
+                <div class="col-2">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+
+
+            </div>
+        </form>
+
+
+    </div>
+</div>

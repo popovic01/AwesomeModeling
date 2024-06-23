@@ -6,16 +6,20 @@ export class QOne {
   public id!: string;
   public topic!: string;
   public status!: string;
-  private submitted_time!: Date;
-  private finished_time!: Date;
-  private local_start_date!: Date;
-  private local_end_date!: Date;
+  public submitted_time!: Date;
+  public finished_time!: Date;
+  public local_start_date!: Date;
+  public local_end_date!: Date;
+}
+
+export class QTwoTopics {
+  public topics!: string[][];
 }
 
 export class QOneCreate {
-  public topic!: string ;
-  public local_start_date!: Date | undefined ;
-  public local_end_date!: Date | undefined ;
+  public topic!: string;
+  public local_start_date!: Date | undefined;
+  public local_end_date!: Date | undefined;
 }
 
 @Injectable({
@@ -37,6 +41,14 @@ export class BackendService {
 
   public createQOne(data: QOneCreate) {
     return this.httpClient.post<QOne>(this.PATH + `/q1`, data);
+  }
 
+  public getQTwo(q1id: string, query: string, k: number) {
+    return this.httpClient.get<QTwoTopics>(this.PATH + `/q1/${q1id}/q2`, {
+      params: {
+        query: query,
+        k: k
+      }
+    });
   }
 }

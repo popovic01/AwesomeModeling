@@ -7,6 +7,10 @@
                 <tr>
                     <th scope="col">Query</th>
                     <th scope="col">Status</th>
+                    <th scope="col">From</th>
+                    <th scope="col">To</th>
+                    <th scope="col">Submitted At</th>
+                    <th scope="col">Finished At</th>
                 </tr>
             </thead>
             <tbody>
@@ -14,6 +18,10 @@
                 <tr [routerLink]="qone.id">
                     <td>{{qone.topic}}</td>
                     <td>{{qone.status}}</td>
+                    <td>{{qone.local_start_date | date: 'yyyy/MM/dd'}}</td>
+                    <td>{{qone.local_end_date | date: 'yyyy/MM/dd'}}</td>
+                    <td>{{qone.submitted_time | date: 'yyyy/MM/dd HH:mm'}}</td>
+                    <td>{{qone.finished_time | date: 'yyyy/MM/dd HH:mm'}}</td>
                 </tr>
                 }
             </tbody>

@@ -3,11 +3,12 @@ import { BackendService, QOne, QOneCreate } from '../../backend.service';
 import { RouterModule } from '@angular/router';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { interval, merge, startWith, Subject, switchMap } from 'rxjs';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-queries',
   standalone: true,
-  imports: [RouterModule, ReactiveFormsModule],
+  imports: [RouterModule, ReactiveFormsModule, DatePipe],
   templateUrl: './queries.component.html',
   styleUrl: './queries.component.css'
 })
