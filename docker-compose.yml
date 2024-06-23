@@ -71,7 +71,11 @@ services:
       - ME_CONFIG_BASICAUTH_PASSWORD
     depends_on:
       - mongo
-
+  
+  front:
+    build: front
+    ports:
+      - 8082:80
 
 volumes:
   esdata:
