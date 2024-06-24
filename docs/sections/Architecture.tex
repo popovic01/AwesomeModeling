@@ -106,14 +106,14 @@ LocalDate local_start_date;
 LocalDate local_end_date;
 \end{lstlisting}
 
-\textit{topic} field represents name of Q1, \textit{status} indicates the current processing status, which can
+The \textit{topic} field represents name of Q1, \textit{status} indicates the current processing status, which can
 have the following values: SUBMITTED, PROCESSING and FINISHED. Beside that, \textit{local\_start\_date} and
-\textit{local\_end\_date} are used to filter articles from Guardian API while \textit{submitted\_date} and
-\textit{finished\_date} represent date of Q1 submission and date when the documents fetching for Q1 is finished,
+\textit{local\_end\_date} are used to filter articles from the Guardian API while \textit{submitted\_date} and
+\textit{finished\_date} represent the date of Q1 submission and the date when the documents fetching for Q1 is finished,
 respectively. Once saved in the database, the entity's ID is published to RabbitMQ.
 \newline
 Concurrently, a Python service subscribes to this queue. Upon receiving the Q1 ID, it triggers fetching from
-the Guardian API, setting the Q1 document status to PROCESSING. Articles retrieved from the Guardian API are saved
+the Guardian API, setting the Q1 document status to PROCESSING. The articles retrieved from the Guardian API are saved
 in MongoDB in the format shown in Listing \ref{lst:article}.
 
 \begin{lstlisting}[language=json, caption={JSON representation of a Guardian Article}, label={lst:article}]
