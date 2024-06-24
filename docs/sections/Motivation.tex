@@ -1,16 +1,16 @@
 \section{Motivation for the specific design choices}
 \label{ch:motivation}
 
-In this chapter we will explain design choices we made and reasons for that.
+In this chapter we will explain design choices we made and the reasons for that.
 
 During the development of the Spring service, we followed the \textit{Separation of Concerns} principle, which is a
 fundamental principle in software engineering and design. It is used to separate an application into units with
 minimal overlapping between the functions of the individual units \cite{geeksforgeeks:soc}. This is done by splitting
-logic into three different layers: \textit{controllers}, \textit{services}, and \textit{repositories}.
+the logic into three different layers: \textit{controllers}, \textit{services}, and \textit{repositories}.
 
 The \textit{controllers} folder contains a class \textit{QOneController.java} responsible for handling HTTP requests
-and mapping them to the appropriate service methods. This keeps the request handling logic separate from business
-logic and data access logic.
+and mapping them to the appropriate service methods. This keeps the request handling logic separate from the business
+logic and the data access logic.
 
 The \textit{services} folder holds the business logic of the service in our case, \textit{MalletService.java}. The
 \textit{repositories} folder contains the data access logic, specifically an interface that extends
@@ -18,6 +18,6 @@ The \textit{services} folder holds the business logic of the service in our case
 without affecting the business logic.
 
 Another good design practice was creating \textit{entities} and \textit{dtos} folders. The \textit{entities} classes
-represent the data models or domain objects. By keeping them in a separate folder, we ensure that the domain logic
+represent the data models or the domain objects. By keeping them in a separate folder, we ensure that the domain logic
 is isolated from the rest of the application. The \textit{dtos} folder keeps \textit{Data Transfer Objects} classes
-separately, which are used to transfer data between layers of the application, especially between the client and server.
+separately, which are used to transfer data between the layers of the application, especially between the client and the server.
