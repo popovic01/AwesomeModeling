@@ -1,0 +1,61 @@
+\section{Deployment}
+
+In this project, we utilized Docker Compose to manage the deployment of a
+microservices architecture. Docker Compose allows us to define and run
+multi-container Docker applications, ensuring a consistent and reproducible
+deployment environment.
+
+Below are the some considerations for
+deploying our services using Docker Compose:
+
+\subsection{Services}
+Since our application is based on a microservices architecture, we decided
+to put every service inside a Docker container.
+We declared the following services in the docker compose configuration:
+\begin{itemize}
+        \item \textbf{MongoDB} that contains a process running the MongoDB server.
+        \item \textbf{ElasticSearch} containing a running ElasticSearch server.
+        \item \textbf{RabbitMQ} for hosting the message queue.
+        \item \textbf{SpringBoot} that handles the client REST requests and
+                communicates with the other microservices.
+        \item \textbf{Worker} that waits for messages to be published in the
+                queue and executes jobs.
+\end{itemize}
+Some additional services:
+\begin{itemize}
+        \item \textbf{Kibana}, a user interface for Elastic, used as a debugging
+                tool.
+        \item \textbf{Mongo Express}, a user interface for MongoDB, useful
+                for navigating the collections with an user interface.
+        \item \textbf{FrontEnd}, a nginx process used to serve to the user
+                a small and lightweight Angular applications. This is the
+                way a "final" user could use the application.
+\end{itemize}
+
+It is important to note that we used the following configuration:
+\begin{lstlisting}[frame=single,caption=Replicas of a services,label=replicas]
+deploy:
+  mode: replicated
+  replicas: 2
+\end{lstlisting}
+
+In this way docker compose will create more than one container for the same
+image. We set this value to 2 because we are in a "development" environment.
+If this application was being run on a more powerful machine (or even better
+on a cluster of machines) we could use much higher values.
+This parameter it is useful since it will allow our application to process more
+than one job at the same time, using the queue as a load balancer.
+
+Health checks are crucial for the correct execution of services. They make sure
+that each service is operational before other dependent services start. MongoDB and
+RabbitMQ have specific health check commands configured.
+In this way, for example, we will avoid that a worker (that depends on the message
+queue) is started before the queue is operational.
+
+The \textit{depends\_on} attribute in Docker Compose ensures that services start
+in the correct order. For example, the Python application waits for MongoDB and
+RabbitMQ to be healthy before it starts, ensuring that all required
+dependencies are available.
+
+The full configuration for the docker compose can be seen in the
+\textit{docker-compose.yml} file.
