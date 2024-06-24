@@ -1,4 +1,4 @@
-\chapter{Methodology}\label{ch:met}
+\chapter{Architecture}\label{ch:met}
 
 \section{Technologies used}
 Firstly, the used technologies such as Spring, Mongo and Mallet will be briefly described in order
@@ -47,7 +47,7 @@ as point-to-point, publish/subscribe, and request/response. It is widely used in
 IoT applications, and asynchronous communication scenarios where decoupling and reliability are crucial.
 \cite{rabbitmq}
 
-\section{Project Description}
+\section{Design - overall architecture}
 The project details are outlined below, supported by diagrams for better understanding.
 
 \begin{figure}
@@ -56,8 +56,8 @@ The project details are outlined below, supported by diagrams for better underst
     \caption{Process flow}
 \end{figure}
 
-Firstly, the Spring service includes a monitoring functionality, initialized by a query referred to
-as Q1. An example JSON representation of Q1 is shown in Listing \ref{lst:q1}.
+Firstly, the Spring service includes a monitoring functionality, initialized by a query referred to as Q1. An
+example JSON representation of Q1 is shown in Listing \ref{lst:q1}.
 
 \begin{lstlisting}[language=json, caption={JSON representation of Q1}, label={lst:q1}]
 {
@@ -82,16 +82,15 @@ LocalDate local_start_date;
 LocalDate local_end_date;
 \end{lstlisting}
 
-\textit{topic} field represents name of Q1, \textit{status} indicates the current processing status,
-which can have the following values: SUBMITTED, PROCESSING and FINISHED. Beside that,
-\textit{local\_start\_date} and \textit{local\_end\_date} are used to filter articles from Guardian
-API while \textit{submitted\_date} and \textit{finished\_date} represent date of Q1 submission and
-date when the documents fetching for Q1 is finished, respectively. Once saved in the database, the
-entity's ID is published to RabbitMQ.
+\textit{topic} field represents name of Q1, \textit{status} indicates the current processing status, which can
+have the following values: SUBMITTED, PROCESSING and FINISHED. Beside that, \textit{local\_start\_date} and
+\textit{local\_end\_date} are used to filter articles from Guardian API while \textit{submitted\_date} and
+\textit{finished\_date} represent date of Q1 submission and date when the documents fetching for Q1 is finished,
+respectively. Once saved in the database, the entity's ID is published to RabbitMQ.
 \newline
-Concurrently, a Python service subscribes to this queue. Upon receiving the Q1 ID, it triggers
-fetching from the Guardian API, setting the Q1 document status to PROCESSING. Articles retrieved from
-the Guardian API are saved in MongoDB in the format shown in Listing \ref{lst:article}.
+Concurrently, a Python service subscribes to this queue. Upon receiving the Q1 ID, it triggers fetching from
+the Guardian API, setting the Q1 document status to PROCESSING. Articles retrieved from the Guardian API are saved
+in MongoDB in the format shown in Listing \ref{lst:article}.
 
 \begin{lstlisting}[language=json, caption={JSON representation of a Guardian Article}, label={lst:article}]
 {
@@ -102,11 +101,65 @@ the Guardian API are saved in MongoDB in the format shown in Listing \ref{lst:ar
 }
 \end{lstlisting}
 
-The \textit{title} and \textit{content} fields represent title and contect of an article respectively
-whereas \textit{guardian\_id} and \textit{web\_date} represent guardian id and date of publishing
-an article. Each article is subsequently indexed and stored as a JSON object in the Elasticsearch server.
+The \textit{title} and \textit{content} fields represent title and contect of an article respectively whereas
+\textit{guardian\_id} and \textit{web\_date} represent guardian id and date of publishing an article. Each article
+is subsequently indexed and stored as a JSON object in the Elasticsearch server.
 
-For the second query, Q2, a user requests \textit{k} topics. This requires the Q1 ID as a parameter.
-For instance, if Q1 was about \textit{Science}, and related articles are stored in the database,
-a subsequent Q2 query like \textit{Nuclear war} expects to retrieve \textit{k} topics based on that
-subset of documents.
+For the second query, Q2, a user requests \textit{k} topics. This requires the Q1 ID as a parameter. For instance,
+if Q1 was about \textit{Science}, and related articles are stored in the database, a subsequent Q2 query like
+\textit{Nuclear war} expects to retrieve \textit{k} topics based on that subset of documents.
+
+\section{Design for Spring service}
+
+One of the services in our application is a Spring service, which is responsible for receiving all user requests,
+saving Q1 in the database, pushing Q1's ID to RabbitMQ, retrieving documents from the ElasticSearch server, and
+performing the topic modeling part. Figure \ref{fig:spring-structure} shows the structure of the Spring service.
+
+\begin{figure}[ht]
+  \centering
+  \begin{forest}
+    for tree={
+      font=\ttfamily,
+      grow=east,
+      parent anchor=east,
+      child anchor=west,
+      edge path={
+        \noexpand\path [draw, \forestoption{edge}] (!u.parent anchor) -- ++(5pt,0) |- (.child anchor)\forestoption{edge label};
+      },
+      l sep=15pt,
+      s sep=15pt,
+    }
+    [awesomemodeling
+      [controllers]
+      [services]
+      [repositories]
+      [enums]
+      [entities]
+      [dtos]
+      [AwesomemodelingApplication.java]
+    ]
+  \end{forest}
+  \caption{Folder structure of the Spring service}
+  \label{fig:spring-structure}
+\end{figure}
+
+During the development of the Spring service, we followed the \textit{Separation of Concerns} principle, which is a
+fundamental principle in software engineering and design. It is used to separate an application into units with
+minimal overlapping between the functions of the individual units \cite{geeksforgeeks:soc}. This is done by splitting
+logic into three different layers: \textit{controllers}, \textit{services}, and \textit{repositories}.
+
+The \textit{controllers} folder contains a class \textit{QOneController.java} responsible for handling HTTP requests
+and mapping them to the appropriate service methods. This keeps the request handling logic separate from business
+logic and data access logic.
+
+The \textit{services} folder holds the business logic of the service—in our case, \textit{MalletService.java}. The
+\textit{repositories} folder contains the data access logic, specifically an interface that extends
+\textit{MongoRepository}—\textit{ControlRepository.java}. This separation allows us to change the data access layer
+without affecting the business logic.
+
+Another good design practice was creating \textit{entities} and \textit{dtos} folders. The \textit{entities} classes
+represent the data models or domain objects. By keeping them in a separate folder, we ensure that the domain logic
+is isolated from the rest of the application. The \textit{dtos} folder keeps \textit{Data Transfer Objects} classes
+separately, which are used to transfer data between layers of the application, especially between the client and server.
+
+
