@@ -36,7 +36,7 @@ export class BackendService {
   constructor(private httpClient: HttpClient) { }
 
   public getQOnes(): Observable<QOne[]> {
-    return this.httpClient.get<QOne[]>(this.PATH + "/q1/");
+    return this.httpClient.get<QOne[]>(this.PATH + "/q1");
   }
 
   public getQOne(id: string): Observable<QOne> {

@@ -93,7 +93,7 @@ public class QOneController {
 
     }
 
-    @GetMapping("/")
+    @GetMapping("")
     ResponseEntity<List<QOne>> getAll() {
         return new ResponseEntity<>(repo.findAll(), HttpStatus.OK);
     }
