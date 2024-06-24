@@ -391,9 +391,3 @@ performing it.
 
 When the job is completed, the worker writes on the document that it is done.
 
-\subsection{Design for ElasticSearch service}
-This service is designed to enable searchability of stored documents.
-Whenever a new article is added to the database, it is also indexed in Elasticsearch.
-This allows us to search for documents related to Q2 using an Elasticsearch client,
-and subsequently perform topic modeling with Mallet on the retrieved ones.
-\subsection{Design for MongoDB service}
