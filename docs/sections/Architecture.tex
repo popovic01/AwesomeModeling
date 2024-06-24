@@ -78,8 +78,16 @@ later, read messages from the queue and execute the associated actions.
 \end{figure}
 
 Figure~\ref{fig:seqDiagram} shows a sequence diagram for the whole system.
-% TODO describe them
+The sequence diagram starts with the user submitting Q1 to the Spring Service. The
+Spring Service saves Q1 in the Control collection and publishes the Q1 id to the
+RabbitMQ queue. RabbitMQ then sends the Q1 id to the Python Service, which starts a
+search on Guardian based on Q1. The Python Service stores the retrieved Guardian
+documents in the database and indexes them using ElasticSearchService. Later, the user
+submits Q2 to the Spring Service, which retrieves the indexed documents related to Q2
+from the the Q1 collection in the database and performs topic modeling on the retrieved
+documents.
 
+In the next few paragraphs, a more detailed explanation of the whole system will be provided.
 Firstly, the Spring service includes a monitoring functionality, initialized by a query referred to as Q1. An
 example JSON representation of Q1 is shown in Listing \ref{lst:q1}.
 
