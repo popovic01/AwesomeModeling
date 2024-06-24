@@ -1,0 +1,13 @@
+\section{Reproducibility}
+To run the application an user would only need to
+\begin{itemize}
+        \item install Docker and Docker Compose on its machine;
+        \item run \texttt{docker compose up --build}
+\end{itemize}
+
+Docker Compose will take care of downloading all the base images,
+building all the images specified in the \textit{Dockerfile} file
+and spinning up all the containers.
+
+The API will be available at \textit{http://localhost:8080} and the
+front-end at \textit{http://localhost:8082}.
