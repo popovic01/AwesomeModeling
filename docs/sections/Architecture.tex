@@ -186,9 +186,164 @@ represent the data models or domain objects. By keeping them in a separate folde
 is isolated from the rest of the application. The \textit{dtos} folder keeps \textit{Data Transfer Objects} classes
 separately, which are used to transfer data between layers of the application, especially between the client and server.
 
-\subsubsection{API requests}
+\subsection{API requests}
+Our application exposes different endopoints to perform all the functionalities described
+in Figure \ref{fig:flow}.
 
-% TODO add possible requests with a brief explaination
+\subsubsection{GET /q1}
+Retrieve a list of all the QOne objects saved in the database \\\\
+\textbf{Request}
+\begin{itemize}
+  \item \textbf{URL:}
+  \begin{quote}
+    \url{/q1}
+  \end{quote}
+  \item \textbf{Method:} GET
+\end{itemize}\leavevmode\newline
+\textbf{Response}
+\begin{itemize}
+  \item \textbf{Status Code:} 200 OK
+  \item \textbf{Body:}
+    \begin{lstlisting}
+      [
+        {
+          "id": id,
+          "topic": topic,
+          "status": status,
+          "submitted_time": submitted_time,
+          "finished_time": finished_time,
+          "local_start_date": local_start_date,
+          "local_end_date": local_end_date
+        },
+        ...
+      ]
+    \end{lstlisting}
+\end{itemize}
+
+\subsubsection{POST /q1}
+Create a new QOne object \\\\
+\textbf{Request}
+\begin{itemize}
+  \item \textbf{URL:}
+  \begin{quote}
+    \url{/q1}
+  \end{quote}
+  \item \textbf{Method:} POST
+  \item \textbf{Headers:}
+  \begin{itemize}
+    \item \textbf{Content-Type:} application/json
+  \end{itemize}
+  \item \textbf{Body:}
+    \begin{lstlisting}
+      {
+        "topic": topic,
+        "local_start_date": local_start_date,
+        "local_end_date": local_end_date
+      }
+    \end{lstlisting}
+\end{itemize}\leavevmode\newline
+\textbf{Response}
+\begin{itemize}
+  \item \textbf{Status Code:} 201 CREATED
+  \item \textbf{Body:}
+    \begin{lstlisting}
+      [
+        {
+          "id": id,
+          "topic": topic,
+          "status": status,
+          "submitted_time": submitted_time,
+          "finished_time": finished_time,
+          "local_start_date": local_start_date,
+          "local_end_date": local_end_date
+        }
+      ]
+    \end{lstlisting}
+\end{itemize}\leavevmode\newline
+\textbf{Errors}
+\begin{itemize}
+  \item \textbf{500 Internal Server Error}: An error occurred while connecting to RabbitMQ
+\end{itemize}
+
+\subsubsection{GET /q1/[QOneID]}
+Retrieve the QOne object specified by \verb|QOneID| \\\\
+\textbf{Request}
+\begin{itemize}
+  \item \textbf{URL:}
+  \begin{quote}
+    \url{/q1/[QOneID]}
+  \end{quote}
+  \item \textbf{Method:} GET
+\end{itemize}\leavevmode\newline
+\textbf{Response}
+\begin{itemize}
+  \item \textbf{Status Code:} 200 OK
+  \item \textbf{Body:}
+    \begin{lstlisting}
+      [
+        {
+          "id": QOneID,
+          "topic": topic,
+          "status": status,
+          "submitted_time": submitted_time,
+          "finished_time": finished_time,
+          "local_start_date": local_start_date,
+          "local_end_date": local_end_date
+        }
+      ]
+    \end{lstlisting}
+\end{itemize}\leavevmode\newline
+\textbf{Errors}
+\begin{itemize}
+  \item \textbf{404 Not Found}: the specified QOne does not exist
+\end{itemize}
+
+\subsubsection{GET /q1/[QOneID]/q2}
+Retrieve the themes related to \verb|QOneID| \\\\
+\textbf{Request}
+\begin{itemize}
+  \item \textbf{URL:}
+  \begin{quote}
+    \url{/q1/[QOneID]}
+  \end{quote}
+  \item \textbf{Parameters:}
+    \begin{itemize}
+      \item \textbf{query}: Q2
+      \item \textbf{k}: the desired number of topics
+    \end{itemize}
+  \item \textbf{Method:} GET
+\end{itemize}\leavevmode\newline
+\textbf{Response}
+\begin{itemize}
+  \item \textbf{Status Code:} 200 OK
+  \item \textbf{Body:}
+    \begin{lstlisting}
+      {
+        "topics": [
+          {
+            "topic": [
+              theme1,
+              theme2,
+              theme3,
+              theme4,
+              theme5,
+              theme6,
+              theme7,
+              theme8,
+              theme9,
+              theme10
+            ]
+          },
+          ...
+        ]
+      }
+    \end{lstlisting}
+\end{itemize}\leavevmode\newline
+\textbf{Errors}
+\begin{itemize}
+  \item \textbf{404 Not Found}: the specified QOne does not exist
+  \item \textbf{500 Internal Server Error}: topic retrieval failed
+\end{itemize}
 
 \subsection{Design for Python service}
 Another service that is part of our application is the Python service called \textit{downindex}, which is responsible for listening to incoming messages in \textit{RabbitMQ}, fetching articles from the \textit{Guardian API}, and indexing them using \textit{ElasticSearch}. The structure of this service is very simple and is shown in Figure \ref{fig:python-structure}. \textit{main.py} holds all the business logic of the service, while \textit{requirements.txt} lists all the required dependencies.
