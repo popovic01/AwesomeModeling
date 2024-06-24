@@ -207,13 +207,13 @@ Retrieve a list of all the QOne objects saved in the database \\\\
     \begin{lstlisting}
       [
         {
-          "id": id,
-          "topic": topic,
-          "status": status,
-          "submitted_time": submitted_time,
-          "finished_time": finished_time,
-          "local_start_date": local_start_date,
-          "local_end_date": local_end_date
+          "id": "string",
+          "topic": "string",
+          "status": "string",
+          "submitted_time": "datetime",
+          "finished_time": "datetime",
+          "local_start_date": "date",
+          "local_end_date": "date"
         },
         ...
       ]
@@ -236,9 +236,9 @@ Create a new QOne object \\\\
   \item \textbf{Body:}
     \begin{lstlisting}
       {
-        "topic": topic,
-        "local_start_date": local_start_date,
-        "local_end_date": local_end_date
+        "topic": "string",
+        "local_start_date": "date",
+        "local_end_date": "date"
       }
     \end{lstlisting}
 \end{itemize}\leavevmode\newline
@@ -249,13 +249,13 @@ Create a new QOne object \\\\
     \begin{lstlisting}
       [
         {
-          "id": id,
-          "topic": topic,
-          "status": status,
-          "submitted_time": submitted_time,
-          "finished_time": finished_time,
-          "local_start_date": local_start_date,
-          "local_end_date": local_end_date
+          "id": "string",
+          "topic": "string",
+          "status": "string",
+          "submitted_time": "datetime",
+          "finished_time": "datetime",
+          "local_start_date": "date",
+          "local_end_date": "date"
         }
       ]
     \end{lstlisting}
@@ -282,13 +282,13 @@ Retrieve the QOne object specified by \verb|QOneID| \\\\
     \begin{lstlisting}
       [
         {
-          "id": QOneID,
-          "topic": topic,
-          "status": status,
-          "submitted_time": submitted_time,
-          "finished_time": finished_time,
-          "local_start_date": local_start_date,
-          "local_end_date": local_end_date
+          "id": "[QOneID]",
+          "topic": "string",
+          "status": "string",
+          "submitted_time": "datetime",
+          "finished_time": "datetime",
+          "local_start_date": "date",
+          "local_end_date": "date"
         }
       ]
     \end{lstlisting}
@@ -308,8 +308,8 @@ Retrieve the themes related to \verb|QOneID| \\\\
   \end{quote}
   \item \textbf{Parameters:}
     \begin{itemize}
-      \item \textbf{query}: Q2
-      \item \textbf{k}: the desired number of topics
+      \item \textbf{query} (mandatory): a query (Q2) related to Q1 on which performing topic modeling
+      \item \textbf{k} (mandatory): the desired number of topics
     \end{itemize}
   \item \textbf{Method:} GET
 \end{itemize}\leavevmode\newline
@@ -322,16 +322,16 @@ Retrieve the themes related to \verb|QOneID| \\\\
         "topics": [
           {
             "topic": [
-              theme1,
-              theme2,
-              theme3,
-              theme4,
-              theme5,
-              theme6,
-              theme7,
-              theme8,
-              theme9,
-              theme10
+              "string",
+              "string",
+              "string",
+              "string",
+              "string",
+              "string",
+              "string",
+              "string",
+              "string",
+              "string"
             ]
           },
           ...
