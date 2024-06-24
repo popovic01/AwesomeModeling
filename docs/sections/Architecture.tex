@@ -186,6 +186,10 @@ represent the data models or domain objects. By keeping them in a separate folde
 is isolated from the rest of the application. The \textit{dtos} folder keeps \textit{Data Transfer Objects} classes
 separately, which are used to transfer data between layers of the application, especially between the client and server.
 
+\subsubsection{API requests}
+
+% TODO add possible requests with a brief explaination
+
 \subsection{Design for Python service}
 Another service that is part of our application is the Python service called \textit{downindex}, which is responsible for listening to incoming messages in \textit{RabbitMQ}, fetching articles from the \textit{Guardian API}, and indexing them using \textit{ElasticSearch}. The structure of this service is very simple and is shown in Figure \ref{fig:python-structure}. \textit{main.py} holds all the business logic of the service, while \textit{requirements.txt} lists all the required dependencies.
 
