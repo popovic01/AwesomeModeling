@@ -1,9 +1,11 @@
-\chapter{Architecture}\label{ch:met}
+\section{Architecture}
 
-\section{Technologies used}
+\label{ch:met}
+
+\subsection{Technologies used}
 Firstly, the used technologies such as Spring, Mongo and Mallet will be briefly described in order
 to easier follow project description later.
-\subsection{Spring}
+\subsubsection{Spring}
 The Spring Framework is a comprehensive and widely used Java-based framework for building
 enterprise-level applications. It provides a robust infrastructure for developing Java applications.
 It simplifies the development of complex applications by promoting good design practices and
@@ -12,34 +14,34 @@ data-driven solutions. Additionally, Spring's modular architecture and extensive
 allow developers to use only the components they need, making it highly flexible and scalable.
 \cite{spring}
 
-\subsection{MongoDB}
+\subsubsection{MongoDB}
 MongoDB is a popular open-source, document-oriented NoSQL database designed for scalability,
 flexibility, and performance. It stores data in flexible, JSON-like documents, allowing for varied
 and dynamic data structures without requiring a fixed schema. MongoDB is known for its ability to handle large
 volumes of data and its powerful querying and indexing capabilities. It supports a wide range of applications.
 \cite{mongodb}
 
-\subsection{Python}
+\subsubsection{Python}
 Python is a versatile and high-level programming language known for its readability, simplicity, and extensive
 standard library. It supports multiple programming paradigms, including procedural, object-oriented, and
 functional programming. Python's dynamic typing and interpreted nature make it an excellent choice for rapid
 application development. Python is also widely used in developing microservices due to its ease of use and
 speed of development. \cite{python}
 
-\subsection{Elasticsearch}
+\subsubsection{Elasticsearch}
 Elasticsearch is a powerful, open-source search and analytics engine designed for horizontal scalability,
 reliability, and real-time search capabilities. It is built on Apache Lucene and provides a distributed, text
 search engine with an HTTP web interface and schema-free JSON documents. It is commonly used for log and event
 data analysis, full-text search, and real-time analytics due to its high performance, flexibility, and ability
 to handle large volumes of data across distributed systems. \cite{elastic}
 
-\subsection{Mallet}
+\subsubsection{Mallet}
 MALLET (MAchine Learning for LanguagE Toolkit) is a Java-based open-source toolkit for statistical natural
 language processing, particularly renowned for its implementations of topic modeling algorithms. It supports
 various algorithms for discovering latent topics in large collections of text documents. MALLET provides tools
 for preprocessing textual data, training topic models, and evaluating model performance. \cite{mallet}
 
-\subsection{RabbitMQ}
+\subsubsection{RabbitMQ}
 RabbitMQ is a powerful open-source message broker that implements the Advanced Message Queuing Protocol (AMQP).
 It enables seamless communication between distributed systems by acting as a mediator that facilitates the
 reliable transfer of messages between applications and services. It supports various messaging patterns such
@@ -47,14 +49,36 @@ as point-to-point, publish/subscribe, and request/response. It is widely used in
 IoT applications, and asynchronous communication scenarios where decoupling and reliability are crucial.
 \cite{rabbitmq}
 
-\section{Design - overall architecture}
-The project details are outlined below, supported by diagrams for better understanding.
+\clearpage
 
-\begin{figure}
+
+\subsection{Design - overall architecture}
+\begin{figure}[ht]
     \centering
-    \includegraphics[width=0.7\linewidth] {././figures/diagram}
-    \caption{Process flow}
+    \includegraphics[width=1\linewidth] {microservices.drawio.pdf}
+    \caption{Microservices}
+    \label{fig:microservices}
 \end{figure}
+
+Figure~\ref{fig:microservices} shows a description of the subdivision of
+the system into microservices. First of all we can see that the client can
+access the application by interacting with the SpringBoot service.
+This service has access to the ElasticSearch and MongoDB services and can
+send messages into the queue. In the figure it is also possible to see
+the workers. These microservices, that will be described in detail
+later, read messages from the queue and execute the associated actions.
+
+\clearpage
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.7\linewidth]{diagram}
+    \caption{Process flow}
+    \label{fig:flow}
+\end{figure}
+
+Figure~\ref{fig:flow} shows three possible actions that the system can perform.
+% TODO describe them
 
 Firstly, the Spring service includes a monitoring functionality, initialized by a query referred to as Q1. An
 example JSON representation of Q1 is shown in Listing \ref{lst:q1}.
@@ -109,7 +133,7 @@ For the second query, Q2, a user requests \textit{k} topics. This requires the Q
 if Q1 was about \textit{Science}, and related articles are stored in the database, a subsequent Q2 query like
 \textit{Nuclear war} expects to retrieve \textit{k} topics based on that subset of documents.
 
-\section{Design for Spring service}
+\subsection{Design for Spring service}
 
 One of the services in our application is a Spring service, which is responsible for receiving all user requests,
 saving Q1 in the database, pushing Q1's ID to RabbitMQ, retrieving documents from the ElasticSearch server, and
@@ -162,7 +186,7 @@ represent the data models or domain objects. By keeping them in a separate folde
 is isolated from the rest of the application. The \textit{dtos} folder keeps \textit{Data Transfer Objects} classes
 separately, which are used to transfer data between layers of the application, especially between the client and server.
 
-\section{Design for Python service}
+\subsection{Design for Python service}
 Another service that is part of our application is the Python service called \textit{downindex}, which is responsible for listening to incoming messages in \textit{RabbitMQ}, fetching articles from the \textit{Guardian API}, and indexing them using \textit{ElasticSearch}. The structure of this service is very simple and is shown in Figure \ref{fig:python-structure}. \textit{main.py} holds all the business logic of the service, while \textit{requirements.txt} lists all the required dependencies.
 
 \begin{figure}[ht]
@@ -188,4 +212,37 @@ Another service that is part of our application is the Python service called \te
   \label{fig:python-structure}
 \end{figure}
 
+\clearpage
 
+\subsection{Message Queue}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=1\linewidth] {queue.drawio}
+    \caption{Queue}
+    \label{fig:queue}
+\end{figure}
+
+Figure~\ref{fig:queue} shows the architecture of the communication between
+the SpringBoot service (which is the service the user can interact with)
+and the worker nodes.
+
+In this example only one worker it is present but
+the same would apply if more than one worker was active. In that case the only
+difference would be that the messages in the queue could be received by different
+workers.
+
+The process goes as follows: the SpringBoot application creates a document
+in the \textit{control} collection containing all the information that the
+worker needs to know to perform the action. In our system the only action
+that is submitted in the queue is the download and index of a topic.
+The Spring microservice then posts a message in the queue containing the
+id of the document.
+
+This message will be then received by one of the workers. The first action
+that the worker does is retrieving the associated control document from the
+collection. Then it writes on the document that the action is being processed
+(so that an user can see that the system is working on its request) and starts
+performing it.
+
+When the job is completed, the worker writes on the document that it is done.
