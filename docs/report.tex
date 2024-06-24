@@ -4,7 +4,7 @@
 \usepackage{hyperref}
 \usepackage[edges]{forest}
 \usepackage[a4paper, total={6in, 8in}]{geometry}
-
+\usepackage[numbers]{natbib}
 \graphicspath{{./figures}}
 
 \colorlet{punct}{red!60!black}
@@ -74,6 +74,9 @@ Andrea Stocco (2108885)}
 \clearpage
 \newpage
 \input{sections/Repr.tex}
+
+\bibliographystyle{plainnat}
+\bibliography{ref}
 
 % You do not need to remove this even if you do not have appendices.
 \appendix
