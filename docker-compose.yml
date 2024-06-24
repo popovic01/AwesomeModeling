@@ -57,7 +57,10 @@ services:
       - GUARDIAN_API
       - MONGO_INITDB_ROOT_USERNAME
       - MONGO_INITDB_ROOT_PASSWORD
-  
+    deploy:
+      mode: replicated
+      replicas: 2
+
   mongoexpress:
     image: mongo-express
     ports:
@@ -71,7 +74,7 @@ services:
       - ME_CONFIG_BASICAUTH_PASSWORD
     depends_on:
       - mongo
-  
+
   front:
     build: front
     ports:
