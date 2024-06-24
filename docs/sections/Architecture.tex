@@ -52,7 +52,7 @@ IoT applications, and asynchronous communication scenarios where decoupling and 
 \clearpage
 
 
-\subsection{Design - overall architecture}
+\subsection{Design choices - overall architecture}
 \begin{figure}[ht]
     \centering
     \includegraphics[width=1\linewidth] {microservices.drawio.pdf}
@@ -133,6 +133,8 @@ For the second query, Q2, a user requests \textit{k} topics. This requires the Q
 if Q1 was about \textit{Science}, and related articles are stored in the database, a subsequent Q2 query like
 \textit{Nuclear war} expects to retrieve \textit{k} topics based on that subset of documents.
 
+\section{Design choices - per service}
+This section presents the design choices for each service. 
 \subsection{Design for Spring service}
 
 One of the services in our application is a Spring service, which is responsible for receiving all user requests,
@@ -186,7 +188,7 @@ represent the data models or domain objects. By keeping them in a separate folde
 is isolated from the rest of the application. The \textit{dtos} folder keeps \textit{Data Transfer Objects} classes
 separately, which are used to transfer data between layers of the application, especially between the client and server.
 
-\subsection{API requests}
+\subsection{APIs}
 Our application exposes different endopoints to perform all the functionalities described
 in Figure \ref{fig:flow}. In the following subsections, the request and response bodies indicate
 the type related to each field.
@@ -406,3 +408,6 @@ collection. Then it writes on the document that the action is being processed
 performing it.
 
 When the job is completed, the worker writes on the document that it is done.
+
+\subsection{Design for ElasticSearch service}
+\subsection{Design for MongoDB service}
