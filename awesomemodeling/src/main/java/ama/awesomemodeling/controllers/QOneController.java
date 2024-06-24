@@ -100,7 +100,7 @@ public class QOneController {
         if (qone == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        ArrayList<String> articleContents = elasticService.retrieveDocuments(id, query);
+        ArrayList<String> articleContents = elasticService.retrieveDocuments("articles_" + id, "content", query);
 
         ArrayList<Topic> topics = malletService.getTopics(articleContents, k);
         if (topics == null) {

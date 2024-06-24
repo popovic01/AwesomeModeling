@@ -31,7 +31,7 @@ public class ElasticService {
         System.out.println("Searching done");
         return response.hits().hits();
     }
-    public ArrayList<String> retrieveDocuments (String id, String query) {
+    public ArrayList<String> retrieveDocuments (String index, String field, String query) {
         // URL and API key
         String serverUrl = "http://elastic:9200";
 
@@ -50,7 +50,7 @@ public class ElasticService {
         // Perform the search
         ArrayList<String> articleContents = new ArrayList<>();
         try {
-            List<Hit<Article>> hits = search(esClient, "articles_" + id, "content", query);
+            List<Hit<Article>> hits = search(esClient, index, field, query);
             if (hits.isEmpty()) {
                 System.out.println("No articles found");
             } else {
