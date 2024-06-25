@@ -101,7 +101,7 @@ example JSON representation of Q1 is shown in Listing \ref{lst:q1}.
 \end{lstlisting}
 
 This query is stored in a MongoDB collection named \textit{Control}, which manages all Q1 queries.
-Listing\ref{lst:q1Class} shows class structure of Q1.
+Listing \ref{lst:q1Class} shows class structure of Q1.
 
 \begin{lstlisting}[language=Java, caption={Class definition of QOne}, label={lst:q1Class}]
 String topic;
@@ -134,7 +134,7 @@ in MongoDB in the format shown in Listing \ref{lst:article}.
 }
 \end{lstlisting}
 
-The \textit{title} and \textit{content} fields represent title and contect of an article respectively whereas
+The \textit{title} and \textit{content} fields represent title and content of an article respectively whereas
 \textit{guardian\_id} and \textit{web\_date} represent guardian id and date of publishing an article. Each article
 is subsequently indexed and stored as a JSON object in the Elasticsearch server.
 
@@ -182,8 +182,8 @@ performing the topic modeling part. Figure \ref{fig:spring-structure} shows the 
 \end{figure}
 
 \subsection{APIs}
-Our application exposes different endopoints to perform all the functionalities described
-in Figure \ref{fig:flow}. In the following subsections, the request and response bodies indicate
+Our application exposes different endpoints to perform all the functionalities described
+in Figure \ref{fig:seqDiagram}. In the following subsections, the request and response bodies indicate
 the type related to each field.
 
 \subsubsection{GET /q1}
