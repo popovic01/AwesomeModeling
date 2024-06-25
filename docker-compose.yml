@@ -7,8 +7,6 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME
       - MONGO_INITDB_ROOT_PASSWORD
-    ports:
-      - 27017:27017
     healthcheck:
       test: ["CMD","mongosh", "--eval", "db.adminCommand('ping')"]
       interval: 10s
@@ -18,9 +16,6 @@ services:
 
   elastic:
     image: elasticsearch:8.13.3
-    ports:
-      - 9200:9200
-      - 9300:9300
     volumes:
       - esdata:/user/share/elasticsearch/data
     environment:
