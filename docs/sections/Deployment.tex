@@ -60,3 +60,9 @@ dependencies are available.
 
 The full configuration for the docker compose can be seen in the
 \textit{docker-compose.yml} file.
+
+\subsection{Volumes}
+In order to avoid losing all the date when the container is destroyed, we created
+2 volumes. One will be mounted in the data folder of the MongoDB container and
+the other one in the data folder of the ElasticSearch container. In this way,
+both the database and Elastic will store their data in a volume.

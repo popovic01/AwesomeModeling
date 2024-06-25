@@ -1,6 +1,25 @@
 \section{Motivation for the specific design choices}
 \label{ch:motivation}
 
+\subsection{Overall architecture}
+First of all, we decided to detach the indexing and downloading of articles
+from the endpoint. This was done for one main reason: the retrieval and indexing
+of documents can be a rather long process, and we didn't want to do it during
+the API call. For this reason we decided to do this asynchronously. The user
+will send the request to the endpoint which is going to insert the job into a
+queue. A response is sent to the client immediately, telling it that the request
+is going to be processed. In a second moment one of the worker nodes will read
+the job request from the queue and will start to process it. Once it is completed
+it will write into a control collection in the database that it completed the job
+so that, an user sending a request to check the status of the process, can
+see that the request is completed.
+
+This can also help us to solve a second problem, \textit{Scalability}.
+By having detached the endpoint and the ``worker nodes'' we can have a large number
+of them, working on the same queue. The queue will act as a \textit{Load Balancer},
+indirectly distributing the jobs to the different workers.
+
+\subsection{API Endpoint (Spring)}
 In this chapter we will explain design choices we made and the reasons for that.
 
 During the development of the Spring service, we followed the \textit{Separation of Concerns} principle, which is a
@@ -21,3 +40,9 @@ Another good design practice was creating \textit{entities} and \textit{dtos} fo
 represent the data models or the domain objects. By keeping them in a separate folder, we ensure that the domain logic
 is isolated from the rest of the application. The \textit{dtos} folder keeps \textit{Data Transfer Objects} classes
 separately, which are used to transfer data between the layers of the application, especially between the client and the server.
+
+\subsection{Worker node}
+Since the worker node needs to interact with the Mongo database and send REST requests
+to Elastic to index documents, we decided to develop it using Python.
+This allows us to manage json objects with dictionaries and to send HTTP requests
+with the \textit{requests} library.

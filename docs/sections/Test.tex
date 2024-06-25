@@ -1,0 +1,40 @@
+\section{Testing}
+In order to test if the application works as expected, we used 2 different
+approaches.
+
+\subsection{Unit Testing}
+The first one, \textit{Unit Testing}, was used for the Spring Microservice.
+As we discussed in the previous sections, the Spring application contains
+a Service that we use to interact with the Mallet library. To test this service
+we wrote a specific class, called \texttt{MalletServiceTest}, that checks whether
+the calls to the Mallet library work as we expect.
+
+\subsection{End-to-end testing}
+End-to-end (E2E) testing is a methodology used to validate the complete and
+integrated functionality of an application, ensuring that the entire workflow
+behaves as expected from start to finish.
+Differently from unit testing, which focuses on individual components or
+services, E2E testing simulates real user scenarios and interactions with the
+system, covering all interconnected parts.
+
+For our application, we designed a E2E test that covers a typical workflow
+the final user could go through.
+In order to accomplish this, we wrote a python script that, with the use of
+the \textit{requests} library, interacts with the REST endpoint and checks
+if everything works.
+
+The script goes through the following steps:
+\begin{itemize}
+        \item \textbf{Setup of the application}: for this step we use the
+                command that deploys the application using docker compose.
+        \item \textbf{Creation of Q1}: we create a Q1.
+        \item \textbf{Await for the completion}: the script waits (by sending
+                a request every few seconds) for the workers to download and
+                index the collection.
+        \item \textbf{Generating topics (Q2)}: the script sends a request for
+                the generation of topics based on a second query (Q2). The script
+                then checks whether the api returned $k$ valid topics.
+        \item \textbf{Shutting down the application}: we use the docker
+                compose command that stops and deletes all the container associated
+                with the application.
+\end{itemize}
