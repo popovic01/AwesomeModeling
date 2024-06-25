@@ -85,7 +85,8 @@ search on Guardian based on Q1. The Python Service stores the retrieved Guardian
 documents in the database and indexes them using ElasticSearchService. Later, the user
 submits Q2 to the Spring Service, which retrieves the indexed documents related to Q2
 from the the Q1 collection in the database and performs topic modeling on the retrieved
-documents.
+documents. It is important to mention that the ElasticSearch Service runs in a separate
+container, while the Mallet Service is a service within the Spring Service.
 
 In the next few paragraphs, a more detailed explanation of the whole system will be provided.
 Firstly, the Spring service includes a monitoring functionality, initialized by a query referred to as Q1. An
