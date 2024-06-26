@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.http.HttpHost;
+import org.elasticsearch.client.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.rabbitmq.client.Channel;
@@ -61,7 +61,7 @@ public class QOneService {
         return repo.findById(id).orElse(null);
     }
 
-    public void deleteQOneBtId(String id) throws InProgressException, NotFoundException {
+    public void deleteQOneBtId(String id) throws InProgressException, NotFoundException, IOException {
         QOne qone = this.getQOneById(id);
 
         if (qone == null) {
@@ -72,10 +72,25 @@ public class QOneService {
             throw new InProgressException();
         }
 
+        mongoTemplate.dropCollection("articles_"+id);
+
+        // delete corresponding index
+        RestClient esClient = RestClient
+                .builder(HttpHost.create("http://elastic:9200"))
+                .build();
+
         try {
-            mongoTemplate.dropCollection("articles_"+id);
-        } catch (Exception e) {
-            System.out.println(e);
+            Request request = new Request("DELETE", "/articles_" + id);
+            Response response = esClient.performRequest(request);
+
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (response.getStatusLine().getStatusCode() == 200) {
+                System.out.println("Index deleted successfully.");
+            } else {
+                System.out.println("Failed to delete index. Status code: " + statusCode);
+            }
+        } finally {
+            esClient.close();
         }
 
         repo.deleteById(id);
