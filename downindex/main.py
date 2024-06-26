@@ -9,14 +9,13 @@ import datetime
 from bson import ObjectId
 
 guardian_api = os.environ["GUARDIAN_API"]
-print("Guardian api is {}".format(guardian_api))
 
 base_url = "https://content.guardianapis.com/"
 
 mongo_user = os.environ["MONGO_INITDB_ROOT_USERNAME"]
 mongo_passwd = os.environ["MONGO_INITDB_ROOT_PASSWORD"]
 client = pymongo.MongoClient("mongodb://{}:{}@mongo:27017/".format(mongo_user, mongo_passwd))
-db = client["test"]
+db = client["awesome"]
 
 def guardian_search_page(query: str, page: int = 1, fromdate: str|None = None, todate: str|None = None):
     url = base_url + "/search"
@@ -55,7 +54,6 @@ def store_article(query: str, id: str, article):
     content = article["blocks"]["body"][0]["bodyTextSummary"]
     guardian_id = article["id"] 
     web_date = article["webPublicationDate"]
-    print(title)
 
     doc = {
         "title": title,
@@ -66,25 +64,20 @@ def store_article(query: str, id: str, article):
 
     collection = db["articles_{}".format(id)]
     collection.insert_one(doc)
-    print("Succesfully stored document")
 
     try:
         del doc["_id"]
         res = requests.post("http://elastic:9200/articles_{}/_doc".format(id), json.dumps(doc), headers={"Content-Type": "application/json"})
         res.raise_for_status()
-        print("Succesfully indexed document")
     except Exception as err:
         print(err)
 
 
 def callback_q1_message(ch, method, properties, body):
-    print(f" [x] Received {body}")
     id = body.decode('utf-8')
     collection = db["control"]
 
     control_document = collection.find_one({"_id": ObjectId(id)})
-
-    print("Retrieved control document: {}".format(control_document))
 
     query = control_document["topic"]
 
@@ -106,8 +99,6 @@ def callback_q1_message(ch, method, properties, body):
 
 
 def main():
-    # print(guardian_search("science"))
-
     connection = pika.BlockingConnection(pika.ConnectionParameters(host='rabbit'))
     channel = connection.channel()
 
