@@ -52,4 +52,10 @@ export class QueriesComponent {
 
   }
 
+  deleteEntry(id: string){
+    this.backendService.deleteQOne(id).subscribe((res) => {
+      console.log(res);
+    });
+  }
+
 }

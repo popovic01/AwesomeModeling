@@ -88,6 +88,10 @@ public class QOneController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
+        if (qone.getStatus() == QOneStatus.PROCESSING) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
         repo.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }

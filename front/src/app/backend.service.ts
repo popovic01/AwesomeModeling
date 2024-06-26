@@ -55,4 +55,8 @@ export class BackendService {
       }
     });
   }
+
+  public deleteQOne(id: string) {
+    return this.httpClient.delete(this.PATH + `/q1/${id}`);
+  }
 }

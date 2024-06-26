@@ -11,22 +11,28 @@
                     <th scope="col">To</th>
                     <th scope="col">Submitted At</th>
                     <th scope="col">Finished At</th>
+                    <th scope="col">Action</th>
                 </tr>
             </thead>
             <tbody>
                 @for (qone of qones; track $index) {
-                <tr [routerLink]="qone.id">
-                    <td>{{qone.topic}}</td>
-                    <td>{{qone.status}}</td>
-                    <td>{{qone.local_start_date | date: 'yyyy/MM/dd'}}</td>
-                    <td>{{qone.local_end_date | date: 'yyyy/MM/dd'}}</td>
-                    <td>{{qone.submitted_time | date: 'yyyy/MM/dd HH:mm'}}</td>
+                <tr>
+                    <td [routerLink]="qone.id">{{qone.topic}}</td>
+                    <td [routerLink]="qone.id">{{qone.status}}</td>
+                    <td [routerLink]="qone.id">{{qone.local_start_date | date: 'yyyy/MM/dd'}}</td>
+                    <td [routerLink]="qone.id">{{qone.local_end_date | date: 'yyyy/MM/dd'}}</td>
+                    <td [routerLink]="qone.id">{{qone.submitted_time | date: 'yyyy/MM/dd HH:mm'}}</td>
                     @if (qone.status != "FINISHED") {
                     <div class="spinner-border spinner-border-sm" role="status">
                         <span class="visually-hidden">Loading...</span>
                     </div>
                     } @else {
-                    <td>{{qone.finished_time | date: 'yyyy/MM/dd HH:mm'}}</td>
+                    <td [routerLink]="qone.id">{{qone.finished_time | date: 'yyyy/MM/dd HH:mm'}}</td>
+                    <td>
+                      <button type="button" class="btn btn-danger" (click)="deleteEntry(qone.id)">
+                        Delete
+                      </button>
+                    </td>
                     }
                 </tr>
                 }
