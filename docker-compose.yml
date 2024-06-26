@@ -17,7 +17,7 @@ services:
   elastic:
     image: elasticsearch:8.13.3
     volumes:
-      - esdata:/user/share/elasticsearch/data
+      - esdata:/usr/share/elasticsearch/data
     environment:
       - ELASTIC_PASSWORD
       - xpack.security.enabled=false
