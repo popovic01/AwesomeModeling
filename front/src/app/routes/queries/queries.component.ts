@@ -17,17 +17,20 @@ export class QueriesComponent {
 
   public createForm;
 
+  private triggerRefresh = new Subject<void>();
+
   constructor(private backendService: BackendService) {
-    interval(5000)
-      .pipe(
-        startWith(0),
-        switchMap(() => this.backendService.getQOnes())
-      )
+
+    merge(interval(5000), this.triggerRefresh).pipe(
+      startWith(0),
+      switchMap(() => this.backendService.getQOnes())
+    )
       .subscribe(
         (res) => {
           this.qones = res;
         },
       );
+
 
     this.createForm = new FormGroup({
       topic: new FormControl(''),
@@ -47,14 +50,15 @@ export class QueriesComponent {
       qonedata.local_end_date = new Date(data.end_date);
 
     this.backendService.createQOne(qonedata).subscribe((res) => {
-      console.log(res);
+      this.triggerRefresh.next();
     });
 
   }
 
-  deleteEntry(id: string){
+  deleteEntry(id: string, event: Event) {
+    event.stopPropagation();
     this.backendService.deleteQOne(id).subscribe((res) => {
-      console.log(res);
+      this.triggerRefresh.next();
     });
   }
 
