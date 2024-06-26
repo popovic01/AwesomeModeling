@@ -5,6 +5,7 @@
 \subsection{Technologies used}
 Firstly, the used technologies such as Spring, Mongo and Mallet will be briefly described in order
 to easier follow project description later.
+
 \subsubsection{Spring}
 The Spring Framework is a comprehensive and widely used Java-based framework for building
 enterprise-level applications. It provides a robust infrastructure for developing Java applications.
@@ -71,13 +72,13 @@ later, read messages from the queue and execute the associated actions.
 \end{figure}
 
 Figure~\ref{fig:seqDiagram} shows a sequence diagram for the whole system.
-The sequence diagram starts with the user submitting Q1 to the Spring Service. The
-Spring Service saves Q1 in the Control collection and publishes the Q1 id to the
-RabbitMQ queue. RabbitMQ then sends the Q1 id to the Python Service, which starts a
-search on Guardian based on Q1. The Python Service stores the retrieved Guardian
-documents in the database and indexes them using ElasticSearchService. Later, the user
-submits Q2 to the Spring Service, which retrieves the indexed documents related to Q2
-from the the Q1 collection in the database and performs topic modeling on the retrieved
+The sequence begins with the user submitting Q1 to the Spring Service. The
+Spring Service saves Q1 in the Control collection and publishes the Q1 ID to the
+RabbitMQ queue. Next, the Python Service reads the Q1 ID from the queue and starts a
+search on Guardian based on Q1. The Python Service then stores the retrieved Guardian
+documents in the database and indexes them using the ElasticSearchService. Later, the user
+submits Q2 to the Spring Service, which retrieves the documents related to Q2
+from the Q1 collection indexed before and performs topic modeling on the retrieved
 documents. It is important to mention that the ElasticSearch Service runs in a separate
 container, while the Mallet Service is a service within the Spring Service.
 
