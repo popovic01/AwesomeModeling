@@ -6,7 +6,7 @@ microservices architecture. Docker Compose allows us to define and run
 multi-container Docker applications, ensuring a consistent and reproducible
 deployment environment.
 
-Below are the some considerations for
+Below there are some considerations for
 deploying our services using Docker Compose:
 
 \subsection{Services}
@@ -62,7 +62,7 @@ The full configuration for the docker compose can be seen in the
 \textit{docker-compose.yml} file.
 
 \subsection{Volumes}
-In order to avoid losing all the date when the container is destroyed, we created
+In order to avoid losing all the data when the container is destroyed, we created
 2 volumes. One will be mounted in the data folder of the MongoDB container and
 the other one in the data folder of the ElasticSearch container. In this way,
 both the database and Elastic will store their data in a volume.
