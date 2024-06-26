@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.concurrent.TimeoutException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,9 @@ public class QOneService {
 
     @Autowired
     private ControlRepository repo;
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
     public QOne createQOne(QOneCreateDTO dto) throws IOException, TimeoutException {
         QOne qone = new QOne();
@@ -66,6 +70,12 @@ public class QOneService {
 
         if (qone.getStatus() == QOneStatus.PROCESSING) {
             throw new InProgressException();
+        }
+
+        try {
+            mongoTemplate.dropCollection("articles_"+id);
+        } catch (Exception e) {
+            System.out.println(e);
         }
 
         repo.deleteById(id);
