@@ -46,7 +46,7 @@ IoT applications, and asynchronous communication scenarios where decoupling and 
 \clearpage
 
 
-\subsection{Design choices - overall architecture}
+\subsection{Overall architecture}
 \begin{figure}[ht]
     \centering
     \includegraphics[width=1\linewidth] {microservices.drawio.pdf}
@@ -109,10 +109,10 @@ LocalDate local_start_date;
 LocalDate local_end_date;
 \end{lstlisting}
 
-The \textit{topic} field represents name of Q1, \textit{status} indicates the current processing status, which can
+The \textit{topic} field represents the name of Q1, \textit{status} indicates the current processing status, which can
 have the following values: SUBMITTED, PROCESSING and FINISHED. Beside that, \textit{local\_start\_date} and
 \textit{local\_end\_date} are used to filter articles from the Guardian API while \textit{submitted\_date} and
-\textit{finished\_date} represent the date of Q1 submission and the date when the documents fetching for Q1 is finished,
+\textit{finished\_date} represent the date of Q1 the submission and the date when the documents fetching for Q1 is finished,
 respectively. Once saved in the database, the entity's ID is published to RabbitMQ.
 \newline
 Concurrently, a Python service subscribes to this queue. Upon receiving the Q1 ID, it triggers fetching from
@@ -128,8 +128,8 @@ in MongoDB in the format shown in Listing \ref{lst:article}.
 }
 \end{lstlisting}
 
-The \textit{title} and \textit{content} fields represent title and content of an article respectively whereas
-\textit{guardian\_id} and \textit{web\_date} represent guardian id and date of publishing an article. Each article
+The \textit{title} and \textit{content} fields represent the title and the content of an article respectively whereas
+\textit{guardian\_id} and \textit{web\_date} represent the guardian id and the date of publishing of an article. Each article
 is subsequently indexed and stored as a JSON object in the Elasticsearch server.
 
 For the second query, Q2, a user requests \textit{k} topics. This requires the Q1 ID as a parameter. For instance,
@@ -140,12 +140,11 @@ if Q1 was about \textit{Science}, and related articles are stored in the databas
 \label{ch:designPerService}
 
 This section presents the design choices for each service. 
-\subsection{Design for Spring service}
+\subsection{Design for the Spring service}
 
-One of the services in our application is a Spring service, which is responsible for receiving all user requests,
+One of the services in our application is the Spring service, which is responsible for receiving all user requests,
 saving Q1 in the database, pushing Q1's ID to RabbitMQ, retrieving documents from the ElasticSearch server, and
-performing the topic modeling part. Figure \ref{fig:spring-structure} shows the structure of the Spring service. In the chapter 
-\ref {ch:motivation} we will discuss design principles we followed and a reason behind that.
+performing the topic modeling part. Figure \ref{fig:spring-structure} shows the structure of the Spring service. In Chapter~\ref{ch:motivation} we will discuss design principles we followed and the reasons behind them.
 
 \clearpage
 \begin{figure}
@@ -345,8 +344,8 @@ Retrieve the themes related to \verb|QOneID| \\\\
   \item \textbf{500 Internal Server Error}: topic retrieval failed
 \end{itemize}
 
-\subsection{Design for Python service}
-Another service that is part of our application is the Python service called \textit{downindex}, which is responsible for listening to incoming messages in \textit{RabbitMQ}, fetching articles from the \textit{Guardian API}, and indexing them using \textit{ElasticSearch}. The structure of this service is very simple and is shown in Figure \ref{fig:python-structure}. \textit{main.py} holds all the business logic of the service, while \textit{requirements.txt} lists all the required dependencies.
+\subsection{Design for the Python service}
+Another service that is part of our application is the Python service called \textit{worker}, which is responsible for listening to incoming messages from \textit{RabbitMQ}, fetching articles from the \textit{Guardian API}, and indexing them using \textit{ElasticSearch}. The structure of this service is very simple and is shown in Figure \ref{fig:python-structure}. \textit{main.py} holds all the business logic of the service, while \textit{requirements.txt} lists all the required dependencies.
 
 \begin{figure}[ht]
   \centering
@@ -383,26 +382,27 @@ Another service that is part of our application is the Python service called \te
 \end{figure}
 
 Figure~\ref{fig:queue} shows the architecture of the communication between
-the SpringBoot service (which is the service the user can interact with)
+the Spring service (which is the service the user can interact with)
 and the worker nodes.
 
-In this example only one worker it is present but
+In this example, only one worker is present but
 the same would apply if more than one worker was active. In that case the only
 difference would be that the messages in the queue could be received by different
 workers.
 
-The process goes as follows: the SpringBoot application creates a document
+The process goes as follows: the Spring application creates a document
 in the \textit{control} collection containing all the information that the
 worker needs to know to perform the action. In our system the only action
-that is submitted in the queue is the download and index of a topic.
+that is submitted in the queue is the process of downloading and indexing a topic.
 The Spring microservice then posts a message in the queue containing the
 id of the document.
 
 This message will be then received by one of the workers. The first action
 that the worker does is retrieving the associated control document from the
-collection. Then it writes on the document that the action is being processed
+collection. Then, it writes in the document that the action is being processed
 (so that an user can see that the system is working on its request) and starts
 performing it.
 
-When the job is completed, the worker writes on the document that it is done.
+When the job is completed, the worker writes on the control document that the
+task has been completed.
 

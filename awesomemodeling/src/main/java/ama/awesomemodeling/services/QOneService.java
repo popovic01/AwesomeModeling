@@ -8,7 +8,9 @@ import org.apache.http.HttpHost;
 import org.elasticsearch.client.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -72,7 +74,7 @@ public class QOneService {
             throw new InProgressException();
         }
 
-        mongoTemplate.dropCollection("articles_"+id);
+        mongoTemplate.dropCollection("articles_" + id);
 
         // delete corresponding index
         RestClient esClient = RestClient
@@ -88,6 +90,10 @@ public class QOneService {
                 System.out.println("Index deleted successfully.");
             } else {
                 System.out.println("Failed to delete index. Status code: " + statusCode);
+            }
+        } catch (ResponseException re) {
+            if (re.getResponse().getStatusLine().getStatusCode() != 404) {
+                throw re;
             }
         } finally {
             esClient.close();
