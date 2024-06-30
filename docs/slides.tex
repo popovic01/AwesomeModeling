@@ -62,11 +62,26 @@ returned as results for a given query.}
 \end{figure}
 \end{frame}
 
+\section{The Queue as Load Balancer}
+\begin{frame}{The Queue as Load Balancer}
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=1\linewidth] {queue.drawio}
+    \caption{Queue}
+    \label{fig:queue}
+\end{figure}
+\end{frame}
+
 \section{Design choices}
 \begin{frame}{Design choices}
 \begin{itemize}
     \item Downloading and indexing are \textbf{Asynchronous}
-    \item \textbf{Scalability} improved
+    \begin{itemize}
+        \item \textbf{Scalability} improved
+    \end{itemize}
+    \item \textit{Separation of Concerns} principle used to divide the
+    Spring Service in units having \textit{Low Coupling} and \textit{High Cohesion}
+    \item Worker Service developed in Python
 \end{itemize}
 \end{frame}
 
